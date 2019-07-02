@@ -1,0 +1,10 @@
+.vscode
+.DS_STORE
+.env
+
+# Python related
+__pycache__
+.ipynb_checkpoints
+
+# Dataset files
+datasets/**/*.csv
