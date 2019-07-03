@@ -3,6 +3,7 @@ import re
 
 import pandas as pd
 from pathlib import Path
+from emoji import emojize
 from tweepy import TweepError
 
 from .connection import Connection
@@ -12,7 +13,7 @@ def get_tweets(query, save_dir=None, max_requests=10, count=100, newer=False):
   connection.load()
 
   max_id, min_id = get_bounding_ids(query, save_dir) if save_dir else (None, -1)
-  q = query + ' -filter:retweets'
+  q = emojize(query) + ' -filter:retweets'
   searched_tweets = []
   last_id = -1 if newer else min_id
   since_id = max_id if newer else None
@@ -58,9 +59,9 @@ def get_bounding_ids(query, save_dir):
     for filename in filenames:
       file_ids = re.findall(r'\d+', filename)
       ids += file_ids[0:2]
-    return (int(max(ids)), int(min(ids)))
-  else:
-    return (None, -1)
+    if len(ids) > 0:
+      return (int(max(ids)), int(min(ids)))
+  return (None, -1)
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
