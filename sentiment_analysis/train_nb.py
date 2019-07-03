@@ -14,7 +14,7 @@ from .dataset import Dataset
 def train_nb(filename, label_col='label', text_col='text', validation_split=0.3):
   dataset = Dataset(filename, label_col=label_col, text_col=text_col)
   dataset.load()
-  dataset.preprocess()
+  dataset.preprocess_texts()
 
   data = dataset.cleaned_data.copy()
   train = pd.DataFrame(columns=['label', 'text'])

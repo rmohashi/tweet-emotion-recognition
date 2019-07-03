@@ -11,7 +11,7 @@ def tokenize(dataset_path,
              num_words=10000):
   dataset = Dataset(dataset_path, label_col=label_col, text_col=text_col)
   dataset.load()
-  dataset.preprocess()
+  dataset.preprocess_texts()
 
   tokenizer = Tokenizer(num_words=num_words, lower=True)
   tokenizer.fit_on_texts(dataset.cleaned_data.text)

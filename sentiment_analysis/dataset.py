@@ -3,6 +3,7 @@ import nltk
 import pandas as pd
 from time import time
 from pathlib import Path
+from .utils import preprocess
 
 class Dataset:
   def __init__(self, filename, label_col='label', text_col='text'):
@@ -27,25 +28,5 @@ class Dataset:
     df = pd.read_csv(Path(self.filename).resolve())
     self.dataframe = df
 
-  def preprocess(self):
-    start = time()
-    texts = self.dataframe[self.text_col].str.lower()
-    texts = texts.str.replace(r"http\S+", "")
-    texts = texts.str.replace(r"http", "")
-    texts = texts.str.replace(r"@\S+", "")
-    texts = texts.str.replace(r"[^a-z\']", " ")
-    pattern = re.compile(r"(.)\1{2,}", re.DOTALL)
-    texts = texts.str.replace(pattern, r"\1")
-    texts = texts.apply(lambda x: ' '.join(x.split()))
-    texts = texts.str.replace(r"(can't|cannot)", 'can not')
-    texts = texts.str.replace(r"n't", ' not')
-    texts = texts.apply(self._remove_stop_words)
-    self.dataframe['cleaned'] = texts
-    print("Time to clean up: {:.2f}".format(time() - start))
-
-  def _remove_stop_words(self, tweet):
-    stopwords = nltk.corpus.stopwords.words('english')
-    stopwords.remove('not')
-    stopwords.remove('nor')
-    stopwords.remove('no')
-    return ' '.join([word for word in tweet.split() if word not in stopwords])
+  def preprocess_texts(self):
+    self.dataframe['cleaned'] = preprocess(self.dataframe[self.text_col])

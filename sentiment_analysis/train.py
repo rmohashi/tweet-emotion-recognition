@@ -19,7 +19,7 @@ def train(dataset_path,
           batch_size=32):
   dataset = Dataset(dataset_path, label_col=label_col, text_col=text_col)
   dataset.load()
-  dataset.preprocess()
+  dataset.preprocess_texts()
 
   tokenizer_file = Path(tokenizer_path).resolve()
   with tokenizer_file.open('rb') as file:
