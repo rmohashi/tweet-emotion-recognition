@@ -35,15 +35,20 @@ def train_nb(filename, label_col='label', text_col='text', validation_split=0.3)
     'clf__alpha': [1, 1e-1, 1e-2]
   }
 
+  x_train = train.text
+  y_train = train.label.astype('int')
+  x_validation = validation.text
+  y_validation = validation.label.astype('int')
+
   print('Running Multinomial Naive Bayes...')
   start = time()
   model = GridSearchCV(text_clf, tuned_parameters, cv=10)
-  model.fit(train.text, train.label)
+  model.fit(x_train, y_train)
   print('Finished in: {} mins'.format(round((time() - start) / 60, 2)))
 
   print('Testing Model...')
-  results = model.predict(validation.text)
-  print(classification_report(validation.label, results, digits=4))
+  results = model.predict(x_validation)
+  print(classification_report(y_validation, results, digits=4))
 
   filepath = Path('models/nb_model.pickle').resolve()
 
