@@ -24,17 +24,68 @@ This module is responsible for the tweets gathering process.
 ### get_tweets
 
 ```bash
-python -m data_fetch [QUERY] -s <SAVE_DIR> -m <MAX_REQUESTS> -c <COUNT> -n
+python -m data_fetch.get_tweets [QUERY] -s <SAVE_DIR> -m <MAX_REQUESTS> -c <COUNT> -n
 ```
+
+Call the Twitter's API and search for tweets w/ the given `QUERY`.
 
 #### Arguments
 
 - **query**: String. Search parameter.
 - **-s** | **--save_dir**: String. Path to the directory where the data will be saved.
-- **-m** | **--max_requests**: Int. Max number of requests to the API.
-- **-c** | **--count**: Int. Max number of tweets for each request.
-- **-n** | **-newer**: Boolean.
+- **-m** | **--max_requests**: Int. Max number of requests to the API. Default: `10`.
+- **-c** | **--count**: Int. Max number of tweets for each request. Default: `100`.
+- **-n** | **-newer**: Boolean. Collect the newer tweets. Default: `True`.
 
 #### Returns
 
-A `DataFrame` w/ the collected data when a `SAVE_DIR` is provided. Otherwise, `None`
+A `DataFrame` w/ the collected data when a `SAVE_DIR` is provided. Otherwise, `None`.
+
+### concat_datasets
+
+```bash
+python -m data_fetch.concat_datasets [QUERY] -s <SAVE_DIR> -m <MAX_REQUESTS> -c <COUNT> -n
+```
+
+Create a new file w/ the datasets containing the given `QUERY`.
+
+#### Arguments
+
+- **query**: String. Search parameter.
+- **dataset_dir**: String. Path to the directory where the files are saved.
+
+
+## Sentiment Analysis
+
+This module is responsible for filtering the tweets, based the emotion associated w/
+the query and the predicted sentiment.
+
+### train_nb
+
+```bash
+python -m sentiment_analysis.train_nb [DATA_FILE] [MODEL_FILE] [SAVE_DIR] -t <TEXT_COL> -p
+```
+
+Train a naive bayes model and save it.
+
+#### Arguments
+
+- **filename**: String. Path to the dataset.
+- **-l** | **label_col**: String: Name of the label column. Default: `label`.
+- **-t** | **text_col**: String: Name of the text column. Default: `text`.
+- **-t** | **validation_split**: Float. Fraction of the dataset to use as validation data. Default: `0.3`.
+
+### predict_nb
+
+```bash
+python -m sentiment_analysis.predict_nb [DATA_FILE] [MODEL_FILE] [SAVE_DIR] -t <TEXT_COL> -p
+```
+
+#### Arguments
+
+- **data_file**: String. Path to the data file.
+- **model_file**: String. Path to the model file.
+- **save_dir**: String. Path to the directory where the result will be saved.
+- **-t** | **--text_col**: String. Name of the text column. Default: `text`.
+- **-p** | **--positive**: Boolean. If the emotion can be classified as positive. Default: `False`.
+
