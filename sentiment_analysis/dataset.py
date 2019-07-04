@@ -1,5 +1,4 @@
 import re
-import nltk
 import pandas as pd
 from time import time
 from pathlib import Path
@@ -7,7 +6,6 @@ from .utils import preprocess
 
 class Dataset:
   def __init__(self, filename, label_col='label', text_col='text'):
-    nltk.download('stopwords')
     self.filename = filename
     self.label_col = label_col
     self.text_col = text_col
