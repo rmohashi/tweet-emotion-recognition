@@ -32,6 +32,7 @@ def get_tweets(query, save_dir=None, max_requests=10, count=100, newer=False):
       last_id = new_tweets[-1].id
       request_count += 1
     except TweepError as e:
+      print(e)
       break
 
   data = []
