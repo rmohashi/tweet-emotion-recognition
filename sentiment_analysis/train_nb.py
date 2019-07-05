@@ -9,7 +9,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report
 
-from .dataset import Dataset
+from nlp.dataset import Dataset
 
 def train_nb(filename, label_col='label', text_col='text', validation_split=0.3):
   dataset = Dataset(filename, label_col=label_col, text_col=text_col)

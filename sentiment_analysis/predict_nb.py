@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 from pathlib import Path
 
-from .utils import preprocess
+from nlp.utils import preprocess
 
 def predict_nb(data_file, model_file, save_dir=None, text_col='text', positive=False):
   file_path = Path(data_file).resolve()

@@ -2,7 +2,7 @@ import os
 import pickle
 import pandas as pd
 from pathlib import Path
-from .dataset import Dataset
+from nlp.dataset import Dataset
 from .models.lstm_conv_model import lstm_conv_model
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.optimizers import Adam
