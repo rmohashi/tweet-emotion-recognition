@@ -81,6 +81,8 @@ Train a naive bayes model and save it.
 python -m sentiment_analysis.predict_nb [DATA_FILE] [MODEL_FILE] [SAVE_DIR] -t <TEXT_COL> -p
 ```
 
+Predict the tweet polarity and save the purge the oddly fetched examples.
+
 #### Arguments
 
 - **data_file**: String. Path to the data file.
@@ -89,3 +91,17 @@ python -m sentiment_analysis.predict_nb [DATA_FILE] [MODEL_FILE] [SAVE_DIR] -t <
 - **-t** | **--text_col**: String. Name of the text column. Default: `text`.
 - **-p** | **--positive**: Boolean. If the emotion can be classified as positive. Default: `False`.
 
+## Emotion Recognition
+
+### create_dataset
+
+```bash
+python -m emotion_recogntion.create_dataset [FILES_DIR] [SAVE_DIR]
+```
+
+Create an annotated dataset, based on the search query.
+
+#### Arguments
+
+- **files_dir**: String. Path to the folder with the Twitter data.
+- **save_dir**: String. Path to the directory where the result will be saved.
