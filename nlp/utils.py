@@ -6,13 +6,13 @@ from emoji import demojize
 def preprocess(texts):
   start = time()
   # Lowercasing
-  texts = texts.apply(demojize)
   texts = texts.str.lower()
 
   # Remove special chars
   texts = texts.str.replace(r"http\S+", "")
   texts = texts.str.replace(r"http", "")
   texts = texts.str.replace(r"@\S+", "")
+  texts = texts.apply(demojize)
   texts = texts.str.replace(r"::", ": :")
   texts = texts.str.replace(r"[^a-z\':_]", " ")
 
