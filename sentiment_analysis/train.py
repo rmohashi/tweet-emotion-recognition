@@ -47,8 +47,8 @@ def train(dataset_path,
   x_train = pad_sequences(list_tokenized_train, maxlen=input_lenght)
   x_validation = pad_sequences(list_tokenized_validation, maxlen=input_lenght)
 
-  y_train = pd.get_dummies(train.label).values
-  y_validation = pd.get_dummies(validation.label).values
+  y_train = pd.get_dummies(train.label)
+  y_validation = pd.get_dummies(validation.label)
 
   model.fit(x_train,
             y=y_train,
