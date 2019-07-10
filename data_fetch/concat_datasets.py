@@ -7,7 +7,7 @@ def concat_datasets(dataset_dir):
   files = pd.Series([x for x in os.listdir(DATASET_DIR) if x.endswith('.csv')],
                      name='files')
   if len(files) > 0:
-    queries = files.str.extract(r'(#.+[^.csv]|:.+:)', expand=False)
+    queries = files.str.extract(r'(#[^.]+|:.+:)', expand=False)
     for query in queries.unique():
       query_files = files[files.str.contains(query)]
       print('Found {} file(s) with query "'.format(len(query_files)) + query + '"')
