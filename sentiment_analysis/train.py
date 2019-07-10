@@ -3,13 +3,15 @@ import pickle
 import pandas as pd
 from pathlib import Path
 from nlp.dataset import Dataset
-from .models.lstm_conv_model import lstm_conv_model
+from .models import NLP_MODEL
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-def train(dataset_path,
+def train(model_type,
+          dataset_path,
           tokenizer_path,
+          save_dir,
           label_col='label',
           text_col='text',
           validation_split=0.3,
@@ -34,11 +36,12 @@ def train(dataset_path,
     train = pd.concat([train, train_data])
     validation = pd.concat([validation, validation_data])
 
-  input_lenght = data.text.apply(lambda text: len(text.split())).max()
+  input_lenght = 100
   input_dim = min(tokenizer.num_words, len(tokenizer.word_index) + 1)
-  model = lstm_conv_model(input_lenght, input_dim, embedding_dim=embedding_dim)
+  model = NLP_MODEL[model_type](input_lenght, input_dim, embedding_dim=embedding_dim)
   optimizer = Adam(learning_rate)
   model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+  print(model.summary())
 
   train_sequences = [text.split() for text in train.text]
   validation_sequences = [text.split() for text in validation.text]
@@ -56,15 +59,17 @@ def train(dataset_path,
             epochs=epochs,
             validation_data=(x_validation, y_validation))
 
-  model_file = Path(model_dir, 'model_weights.h5')
-  model.save_weights(model_file)
+  model_file = Path(save_dir, 'model_weights.h5').resolve()
+  model.save_weights(model_file.as_posix())
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
 
   parser = ArgumentParser()
+  parser.add_argument('model_type', type=str, choices=['lstm', 'lstm_conv'])
   parser.add_argument('dataset_path', type=str)
   parser.add_argument('tokenizer_path', type=str)
+  parser.add_argument('save_dir', type=str)
   parser.add_argument('-l', '--label_col', type=str, default='label')
   parser.add_argument('-t', '--text_col', type=str, default='text')
   parser.add_argument('-v', '--validation_split', type=float, default=0.3)

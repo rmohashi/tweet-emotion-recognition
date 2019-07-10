@@ -14,5 +14,14 @@
   "#joy": "joy",
   "#pissed": "angry",
   "#angry": "angry",
-  "#mad": "angry"
+  "#mad": "angry",
+  "#excited": "joy",
+  "#furious": "angry",
+  "#depressed": "sadness",
+  ":pensive_face:": "sadness",
+  "#afraid": "fear",
+  "#scared": "fear",
+  "#worried": "fear",
+  "#scary": "fear",
+  ":anxious_face_with_sweat:": "fear"
 }
