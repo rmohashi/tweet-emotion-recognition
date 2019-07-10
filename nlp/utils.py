@@ -36,5 +36,5 @@ def preprocess(texts):
     lambda x: ' '.join([word for word in x.split() if word not in stopwords])
   )
 
-  print("Time to clean up: {:.2f}".format(time() - start))
+  print("Time to clean up: {:.2f} sec".format(time() - start))
   return texts
