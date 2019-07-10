@@ -60,6 +60,28 @@ Create a new file w/ the datasets containing the given `QUERY`.
 This module is responsible for filtering the tweets, based the emotion associated w/
 the query and the predicted sentiment.
 
+### train
+
+```bash
+python -m sentiment_analysis.train [MODEL_TYPE] [DATASET_PATH] [TOKENIZER_PATH] [SAVE_DIR] -l <LABEL_COL> -t <TEXT_COL> -v <VALIDATION_SPLIT> -ed <EMBEDDING_DIM> -lr <LEARNING_RATE> -e <EPOCHS> -b <BATCH_SIZE>
+```
+
+Train a sentiment analysis model, using the given `MODEL_TYPE` and save the weights.
+
+#### Arguments
+
+- **model_type**: String. Model to use. Choices: [`lstm`, `lstm_conv`]
+- **dataset_path**: String. Path to the dataset.
+- **tokenizer_path**: String. Path to the tokenizer.
+- **save_dir**: Stirng. Path to the directory where the weights will be saved.
+- **-l** | **--label_col**: String. Name of the label column. Default: `label`.
+- **-t** | **--text_col**: String. Name of the text column. Default: `text`.
+- **-v** | **--validation_split**: Float. Fraction of the dataset to use as validation data. Default: `0.3`.
+- **-ed** | **--embedding_dim**: Int. Output dimension of the embedding layer. Default: `100`.
+- **-lr** | **--learning_rate**: Float. Initial learning rate. Default: `1e-3`.
+- **-e** | **--epochs**: Int. Total number of epochs. Default: `10`.
+- **-b** | **--batch_size**: Int. Number of batches per epoch. Default: `32`.
+
 ### train_nb
 
 ```bash
@@ -74,6 +96,21 @@ Train a naive bayes model and save it.
 - **-l** | **label_col**: String: Name of the label column. Default: `label`.
 - **-t** | **text_col**: String: Name of the text column. Default: `text`.
 - **-t** | **validation_split**: Float. Fraction of the dataset to use as validation data. Default: `0.3`.
+
+### predict_from_directory
+
+```bash
+python -m sentiment_analysis.predict_from_directory [FILES_DIR] [MODEL_FILE] [SAVE_PATH] -t <TEXT_COL>
+```
+
+Create an annotated dataset, based on the search query and the Naive Bayes' sentiment analysis.
+
+#### Arguments
+
+- **files_dir**: String. Path to the directory containing the datasets.
+- **model_file**: String. Path to the naive bayes `.pickle` file.
+- **save_path**: String. Path where the resulting dataset will be saved.
+- **-t** | **--text_col**: String. Name of the text column. Default: `text`.
 
 ### predict_nb
 
@@ -90,18 +127,3 @@ Predict the tweet polarity and save the purge the oddly fetched examples.
 - **save_dir**: String. Path to the directory where the result will be saved.
 - **-t** | **--text_col**: String. Name of the text column. Default: `text`.
 - **-p** | **--positive**: Boolean. If the emotion can be classified as positive. Default: `False`.
-
-## Emotion Recognition
-
-### create_dataset
-
-```bash
-python -m emotion_recogntion.create_dataset [FILES_DIR] [SAVE_DIR]
-```
-
-Create an annotated dataset, based on the search query.
-
-#### Arguments
-
-- **files_dir**: String. Path to the folder with the Twitter data.
-- **save_dir**: String. Path to the directory where the result will be saved.
