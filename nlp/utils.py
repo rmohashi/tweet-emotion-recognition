@@ -9,19 +9,15 @@ def preprocess(texts):
   texts = texts.str.lower()
 
   # Remove special chars
-  texts = texts.str.replace(r"http\S+", "")
-  texts = texts.str.replace(r"http", "")
-  texts = texts.str.replace(r"@\S+", "")
+  texts = texts.str.replace(r"(http|@)\S+", "")
   texts = texts.apply(demojize)
   texts = texts.str.replace(r"::", ": :")
+  texts = texts.str.replace(r"’", "'")
   texts = texts.str.replace(r"[^a-z\':_]", " ")
 
   # Remove repetitions
   pattern = re.compile(r"(.)\1{2,}", re.DOTALL)
   texts = texts.str.replace(pattern, r"\1")
-
-  # Remove multiple whitespaces
-  texts = texts.apply(lambda x: ' '.join(x.split()))
 
   # Transform short negation form
   texts = texts.str.replace(r"(can't|cannot)", 'can not')
