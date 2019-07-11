@@ -13,6 +13,7 @@ def tokenize(dataset_path,
   dataset.load()
   dataset.preprocess_texts()
 
+  print('Running tokenizer...')
   tokenizer = Tokenizer(num_words=num_words, lower=True)
   tokenizer.fit_on_texts(dataset.cleaned_data.text)
 
