@@ -32,7 +32,7 @@ def lstm_conv_model(input_length,
   max_pool = GlobalMaxPooling1D()(output_layer)
   output_layer = concatenate([avg_pool, max_pool])
 
-  output_layer = Dense(2, activation='softmax')(output_layer)
+  output_layer = Dense(2, activation='sigmoid')(output_layer)
 
   model = Model(input_layer, output_layer)
   return model

@@ -25,5 +25,5 @@ def lstm_model(input_length,
   model.add(Dense(32, activation='relu'))
   model.add(Dropout(dropout))
 
-  model.add(Dense(2, activation='softmax'))
+  model.add(Dense(1, activation='sigmoid'))
   return model

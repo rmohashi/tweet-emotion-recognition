@@ -53,8 +53,8 @@ def train(model_type,
   x_train = pad_sequences(list_tokenized_train, maxlen=input_lenght)
   x_validation = pad_sequences(list_tokenized_validation, maxlen=input_lenght)
 
-  y_train = pd.get_dummies(train.label)
-  y_validation = pd.get_dummies(validation.label)
+  y_train = train.label.replace(4, 1)
+  y_validation = validation.label.replace(4, 1)
 
   checkpoint_path = os.path.join(save_dir, 'checkpoints', '{epoch:02d}-{val_acc:.4f}.h5')
   log_dir = os.path.join(save_dir, 'logs')
