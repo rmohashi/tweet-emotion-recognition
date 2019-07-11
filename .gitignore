@@ -13,3 +13,6 @@ datasets/**/*.pickle
 # Model files
 models/**/*.h5
 models/**/*.pickle
+
+# Tensorboard logs
+models/logs/**/*.*
