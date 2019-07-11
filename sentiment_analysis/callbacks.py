@@ -8,7 +8,7 @@ def early_stopping(patience):
     patience=patience
   )
 
-def checkpoints(filepath, save_weights_only=False):
+def checkpoints(filepath, save_weights_only=True):
   return ModelCheckpoint(
     filepath=filepath,
     monitor='val_acc',
