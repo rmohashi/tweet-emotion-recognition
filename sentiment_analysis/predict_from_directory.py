@@ -57,7 +57,8 @@ def predict_from_directory(files_dir,
     result = model.predict(x_predict)
     mean = np.mean(result)
     std = np.std(result)
-    dataset = dataset[np.all([(result >= mean - std), (result <= mean - std)], axis=0)]
+    print('Mean score: {:4f}. Reduced Range: {:4f} - {:4f}'.format(mean, mean - 0.05, mean + 0.05))
+    dataset = dataset[np.all([(result >= mean - 0.05), (result <= mean + 0.05)], axis=0)]
     dataset['label'] = emotion
 
     result_data = result_data + [dataset]
