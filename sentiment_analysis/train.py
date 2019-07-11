@@ -2,8 +2,11 @@ import os
 import pickle
 import pandas as pd
 from pathlib import Path
+
 from nlp.dataset import Dataset
 from .models import NLP_MODEL
+from .callbacks import checkpoints, early_stopping, tensorboard, reduce_lr
+
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -53,11 +56,17 @@ def train(model_type,
   y_train = pd.get_dummies(train.label)
   y_validation = pd.get_dummies(validation.label)
 
-  model.fit(x_train,
-            y=y_train,
-            batch_size=batch_size,
-            epochs=epochs,
-            validation_data=(x_validation, y_validation))
+  checkpoint_path = os.path.join(save_dir, 'checkpoints', '{epoch:02d}-{val_acc:.4f}.h5')
+  log_dir = os.path.join(save_dir, 'logs')
+
+  model.fit(
+    x_train,
+    y=y_train,
+    batch_size=batch_size,
+    epochs=epochs,
+    validation_data=(x_validation, y_validation),
+    callbacks=[checkpoints(checkpoint_path), tensorboard(log_dir, batch_size), early_stopping(10), reduce_lr(5)]
+  )
 
   model_file = Path(save_dir, 'model_weights.h5').resolve()
   model.save_weights(model_file.as_posix())
