@@ -3,7 +3,7 @@ import nltk
 from time import time
 from emoji import demojize
 
-def preprocess(texts):
+def preprocess(texts, quiet=False):
   start = time()
   # Lowercasing
   texts = texts.str.lower()
@@ -32,5 +32,7 @@ def preprocess(texts):
     lambda x: ' '.join([word for word in x.split() if word not in stopwords])
   )
 
-  print("Time to clean up: {:.2f} sec".format(time() - start))
+  if not quiet:
+    print("Time to clean up: {:.2f} sec".format(time() - start))
+
   return texts
