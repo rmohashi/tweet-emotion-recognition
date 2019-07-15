@@ -19,6 +19,7 @@ def train(model_type,
           text_col='text',
           validation_split=0.3,
           embedding_dim=100,
+          input_length=100,
           learning_rate=1e-3,
           epochs=10,
           batch_size=32):
@@ -39,9 +40,8 @@ def train(model_type,
     train = pd.concat([train, train_data])
     validation = pd.concat([validation, validation_data])
 
-  input_lenght = 100
   input_dim = min(tokenizer.num_words, len(tokenizer.word_index) + 1)
-  model = NLP_MODEL[model_type](input_lenght, input_dim, embedding_dim=embedding_dim)
+  model = NLP_MODEL[model_type](input_length, input_dim, embedding_dim=embedding_dim)
   optimizer = Adam(learning_rate)
   model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
   print(model.summary())
@@ -50,14 +50,18 @@ def train(model_type,
   validation_sequences = [text.split() for text in validation.text]
   list_tokenized_train = tokenizer.texts_to_sequences(train_sequences)
   list_tokenized_validation = tokenizer.texts_to_sequences(validation_sequences)
-  x_train = pad_sequences(list_tokenized_train, maxlen=input_lenght)
-  x_validation = pad_sequences(list_tokenized_validation, maxlen=input_lenght)
+  x_train = pad_sequences(list_tokenized_train, maxlen=input_length)
+  x_validation = pad_sequences(list_tokenized_validation, maxlen=input_length)
 
   y_train = train.label.replace(4, 1)
   y_validation = validation.label.replace(4, 1)
 
-  checkpoint_path = os.path.join(save_dir, 'checkpoints', '{epoch:02d}-{val_acc:.4f}.h5')
-  log_dir = os.path.join(save_dir, 'logs')
+  model_name = model_type + '_' + str(embedding_dim) + '_' + str(input_length)
+  checkpoint_path = os.path.join(save_dir, 'checkpoints', model_name + '_{epoch:02d}-{val_acc:.4f}.h5')
+  log_dir = os.path.join(save_dir, 'logs', model_name)
+
+  if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
   model.fit(
     x_train,
@@ -68,14 +72,14 @@ def train(model_type,
     callbacks=[checkpoints(checkpoint_path), tensorboard(log_dir, batch_size), early_stopping(10), reduce_lr(5)]
   )
 
-  model_file = Path(save_dir, 'model_weights.h5').resolve()
+  model_file = Path(save_dir, model_name + '.h5').resolve()
   model.save_weights(model_file.as_posix())
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
 
   parser = ArgumentParser()
-  parser.add_argument('model_type', type=str, choices=['lstm', 'lstm_conv'])
+  parser.add_argument('model_type', type=str, choices=['gru', 'lstm_conv'])
   parser.add_argument('dataset_path', type=str)
   parser.add_argument('tokenizer_path', type=str)
   parser.add_argument('save_dir', type=str)
@@ -83,6 +87,7 @@ if __name__ == '__main__':
   parser.add_argument('-t', '--text_col', type=str, default='text')
   parser.add_argument('-v', '--validation_split', type=float, default=0.3)
   parser.add_argument('-ed', '--embedding_dim', type=int, default=100)
+  parser.add_argument('-i', '--input_length', type=int, default=100)
   parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
   parser.add_argument('-e', '--epochs', type=int, default=10)
   parser.add_argument('-b', '--batch_size', type=int, default=32)

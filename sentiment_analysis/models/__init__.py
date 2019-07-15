@@ -1,7 +1,7 @@
 from .lstm_conv_model import lstm_conv_model as lstm_conv
-from .lstm_model import lstm_model as lstm
+from .gru_model import gru_model as gru
 
 NLP_MODEL = {
-  'lstm': lstm,
+  'gru': gru,
   'lstm_conv': lstm_conv,
 }

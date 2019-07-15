@@ -3,12 +3,12 @@ from tensorflow.keras.layers import Dropout, GlobalMaxPooling1D
 from tensorflow.keras.layers import Bidirectional, Dense
 from tensorflow.keras.models import Sequential
 
-def lstm_model(input_length,
+def gru_model(input_length,
                input_dim,
                embedding_dim=100,
                dropout=0.1,
-               lstm_units=128,
-               lstm_dropout=0.1,
+               gru_units=128,
+               gru_dropout=0.1,
                recurrent_dropout=0.1):
   model = Sequential()
   model.add(Embedding(
@@ -18,8 +18,8 @@ def lstm_model(input_length,
   ))
 
   model.add(Bidirectional(
-    GRU(lstm_units, return_sequences=True,
-         dropout=lstm_dropout, recurrent_dropout=recurrent_dropout)
+    GRU(gru_units, return_sequences=True,
+         dropout=gru_dropout, recurrent_dropout=recurrent_dropout)
   ))
   model.add(GlobalMaxPooling1D())
   model.add(Dense(32, activation='relu'))

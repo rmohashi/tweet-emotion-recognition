@@ -49,7 +49,7 @@ def predict_from_directory(files_dir,
   for emotion, dataset in emotion_data_dict.items():
     print('Processing "' + emotion + '" data...')
 
-    cleaned_texts = preprocess(dataset[text_col])
+    cleaned_texts = preprocess(dataset[text_col], quiet=True)
     predict_sequences = [text.split() for text in cleaned_texts]
     list_tokenized_predict = tokenizer.texts_to_sequences(predict_sequences)
     x_predict = pad_sequences(list_tokenized_predict, maxlen=100)
@@ -57,9 +57,10 @@ def predict_from_directory(files_dir,
     result = model.predict(x_predict)
     mean = np.mean(result)
     std = np.std(result)
-    print('Mean score: {:4f}. Reduced Range: {:4f} - {:4f}'.format(mean, mean - 0.05, mean + 0.05))
-    dataset = dataset[np.all([(result >= mean - 0.05), (result <= mean + 0.05)], axis=0)]
-    dataset['label'] = emotion
+    low, high = get_score_range(mean)
+    print("\tScore Range: {:4f} - {:4f}".format(low, high))
+    dataset = dataset[np.all([(result >= low), (result <= high)], axis=0)]
+    dataset.insert(0, 'label', emotion)
 
     result_data = result_data + [dataset]
 
@@ -71,13 +72,18 @@ def predict_from_directory(files_dir,
 
     print('Files saved under "' + save_path + '"')
 
+def get_score_range(mean):
+  if mean < 0.5:
+    return (0.0, mean)
+  return (mean, 1.0)
+
 if __name__ == '__main__':
   from argparse import ArgumentParser
 
   parser = ArgumentParser()
   parser.add_argument('files_dir', type=str)
   parser.add_argument('model_weights_file', type=str)
-  parser.add_argument('model_type', type=str, choices=['lstm', 'lstm_conv'])
+  parser.add_argument('model_type', type=str, choices=['gru', 'lstm_conv'])
   parser.add_argument('tokenizer_file', type=str)
   parser.add_argument('save_path', type=str)
   parser.add_argument('-e', '--embedding_dim', type=int, default=100)
