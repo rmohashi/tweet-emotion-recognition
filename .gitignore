@@ -15,4 +15,4 @@ models/**/*.h5
 models/**/*.pickle
 
 # Tensorboard logs
-models/logs/**/*.*
+models/**/logs/**/*.*

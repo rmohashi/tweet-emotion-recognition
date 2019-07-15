@@ -26,5 +26,5 @@ class Dataset:
     df = pd.read_csv(Path(self.filename).resolve())
     self.dataframe = df
 
-  def preprocess_texts(self):
-    self.dataframe['cleaned'] = preprocess(self.dataframe[self.text_col])
+  def preprocess_texts(self, quiet=False):
+    self.dataframe['cleaned'] = preprocess(self.dataframe[self.text_col], quiet)
