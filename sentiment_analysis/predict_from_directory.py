@@ -74,8 +74,8 @@ def predict_from_directory(files_dir,
 
 def get_score_range(mean):
   if mean < 0.5:
-    return (0.0, mean)
-  return (mean, 1.0)
+    return (0.0, mean + 0.05)
+  return (mean - 0.05, 1.0)
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
