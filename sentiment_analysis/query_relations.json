@@ -22,5 +22,14 @@
   "#scared": "fear",
   "#worried": "fear",
   "#scary": "fear",
-  ":anxious_face_with_sweat:": "fear"
+  ":anxious_face_with_sweat:": "fear",
+  "#hateyou": "angry",
+  ":loudly_crying_face:": "sadness",
+  ":broken_heart:": "sadness",
+  ":red_heart:": "joy",
+  ":face_with_symbols_on_mouth:": "angry",
+  ":angry_face:": "angry",
+  ":smiling_face_with_smiling_eyes:": "joy",
+  "#depression": "sadness",
+  "#pissedoff": "angry"
 }
