@@ -50,7 +50,7 @@ def train_nb(filename, label_col='label', text_col='text', validation_split=0.3)
   results = model.predict(x_validation)
   print(classification_report(y_validation, results, digits=4))
 
-  filepath = Path('models/nb_model.pickle').resolve()
+  filepath = Path('models/sentiment_analysis/nb_model.pickle').resolve()
 
   with filepath.open('wb') as file:
     pickle.dump(model, file)
