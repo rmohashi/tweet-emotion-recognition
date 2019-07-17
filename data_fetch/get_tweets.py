@@ -44,6 +44,7 @@ def get_tweets(query, save_dir=None, max_requests=10, count=100, newer=False):
 
   if save_dir and data:
     PATH = Path(save_dir).resolve()
+    query = '_'.join(query.split(' '))
     filename = str(data[0][0]) + '-' + str(last_id) + '_' + query + '.csv'
     df.to_csv(os.path.join(PATH, filename), index=None)
     print('Saved under: "' + PATH.as_posix() + '"')
