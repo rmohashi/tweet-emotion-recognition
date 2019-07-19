@@ -16,3 +16,7 @@ models/**/*.pickle
 
 # Tensorboard logs
 models/**/logs/**/*.*
+
+# Remove images
+**/*.png
+**/*.jpg
