@@ -12,16 +12,16 @@ from sklearn.manifold import TSNE
 
 @click.command()
 @click.argument('file')
-@click.argument('output')
+@click.option('--output_name', '-o', type=str)
+@click.option('--output_dir_path', '-od', default='datasets/kmeans', type=str)
 @click.option('--max_features', '-mf', default=8000, type=int)
 @click.option('--n_clusters', '-n', default=4, type=int)
 @click.option('--init_size', '-i', default=1024, type=int)
 @click.option('--batch_size', '-b', default=2048, type=int)
 @click.option('--random_state', '-r', default=20, type=int)
-def kmeans_data_check(file, output, max_features, n_clusters,
-                      init_size, batch_size, random_state):
+def kmeans_data_filter(file, output_name, output_dir_path, max_features,
+                       n_clusters, init_size, batch_size, random_state):
   filepath = Path(file).resolve()
-  output_path = Path(output).resolve()
   df = pd.read_csv(filepath)
 
   preprocessed_data = preprocess(df.text)
@@ -41,9 +41,13 @@ def kmeans_data_check(file, output, max_features, n_clusters,
   ).fit_predict(tfidf)
 
   cluster_to_use = np.bincount(clusters).argmax()
-  print(cluster_to_use)
+
+  output_dir = Path(output_dir_path).resolve()
+  output_name = output_name or filepath.name
+  output_path = output_dir.joinpath(output_name)
+
   df[clusters == cluster_to_use].to_csv(output_path, index=None)
   print('Finished processing file.')
 
 if __name__ == '__main__':
-  kmeans_data_check()
+  kmeans_data_filter()
