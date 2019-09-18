@@ -1,5 +1,5 @@
 python-dotenv==0.1.0
-tweepy==3.5.0
+tweepy==3.8.0
 jupyter==1.0.0
 tensorflow-gpu==1.14.0
 pandas==0.24.2
