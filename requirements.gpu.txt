@@ -12,3 +12,4 @@ tqdm==4.32.2
 matplotlib==3.0.3
 click==7.0
 gensim==3.8.0
+pyLDAvis==2.1.2
