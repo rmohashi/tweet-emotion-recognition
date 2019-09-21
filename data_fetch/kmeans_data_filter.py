@@ -7,8 +7,6 @@ from nlp.utils import preprocess
 
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 
 @click.command()
 @click.argument('file')
