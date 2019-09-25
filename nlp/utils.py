@@ -2,8 +2,9 @@ import re
 import nltk
 from time import time
 from emoji import demojize
+from nltk.stem.snowball import SnowballStemmer
 
-def preprocess(texts, quiet=False):
+def preprocess(texts, stemming=False, quiet=False):
   start = time()
   # Lowercasing
   texts = texts.str.lower()
@@ -31,6 +32,11 @@ def preprocess(texts, quiet=False):
   texts = texts.apply(
     lambda x: ' '.join([word for word in x.split() if word not in stopwords])
   )
+
+  # Stemming
+  if stemming:
+    stemmer = SnowballStemmer("english")
+    texts = texts.apply(lambda x: stemmer.stem(x))
 
   if not quiet:
     print("Time to clean up: {:.2f} sec".format(time() - start))
