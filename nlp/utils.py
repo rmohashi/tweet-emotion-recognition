@@ -10,7 +10,8 @@ def preprocess(texts, quiet=False, stemming=False, no_emoji=False):
   texts = texts.str.lower()
 
   # Remove special chars
-  texts = texts.str.replace(r"(http|@)\S+", "")
+  texts = texts.str.replace(r"@\S+", "<USER>")
+  texts = texts.str.replace(r"http\S+", "<URL>")
   texts = texts.str.replace(r"&amp", "and")
   texts = texts.apply(demojize)
   texts = texts.str.replace(r"::", ": :")
