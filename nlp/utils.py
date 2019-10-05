@@ -20,7 +20,7 @@ def preprocess(texts, quiet=False, stemming=False, no_emoji=False):
 
   # Remove repetitions
   pattern = re.compile(r"(.)\1{2,}", re.DOTALL)
-  texts = texts.str.replace(pattern, r"\1")
+  texts = texts.str.replace(pattern, r"\1\1")
 
   # Transform short negation form
   texts = texts.str.replace(r"(can't|cannot)", 'can not')
