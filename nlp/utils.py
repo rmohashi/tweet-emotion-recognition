@@ -4,17 +4,18 @@ from time import time
 from emoji import demojize
 from nltk.stem.snowball import SnowballStemmer
 
-def preprocess(texts, stemming=False, quiet=False):
+def preprocess(texts, quiet=False, stemming=False, no_emoji=False):
   start = time()
   # Lowercasing
   texts = texts.str.lower()
 
   # Remove special chars
   texts = texts.str.replace(r"(http|@)\S+", "")
+  texts = texts.str.replace(r"&amp", "and")
   texts = texts.apply(demojize)
   texts = texts.str.replace(r"::", ": :")
   texts = texts.str.replace(r"’", "'")
-  texts = texts.str.replace(r"[^a-z\':_]", " ")
+  texts = texts.str.replace(r"[^a-zA-Z\':_]", " ")
 
   # Remove repetitions
   pattern = re.compile(r"(.)\1{2,}", re.DOTALL)
@@ -22,6 +23,8 @@ def preprocess(texts, stemming=False, quiet=False):
 
   # Transform short negation form
   texts = texts.str.replace(r"(can't|cannot)", 'can not')
+  texts = texts.str.replace(r"'m", ' am')
+  texts = texts.str.replace(r"'s", ' is')
   texts = texts.str.replace(r"n't", ' not')
 
   # Remove stop words
@@ -37,6 +40,10 @@ def preprocess(texts, stemming=False, quiet=False):
   if stemming:
     stemmer = SnowballStemmer("english")
     texts = texts.apply(lambda x: stemmer.stem(x))
+
+  # Filtering emojis if needed
+  if no_emoji:
+    texts = texts.str.replace(r":\S+:", '')
 
   if not quiet:
     print("Time to clean up: {:.2f} sec".format(time() - start))
