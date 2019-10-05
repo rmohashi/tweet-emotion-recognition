@@ -26,5 +26,11 @@ class Dataset:
     df = pd.read_csv(Path(self.filename).resolve())
     self.dataframe = df
 
-  def preprocess_texts(self, quiet=False):
-    self.dataframe['cleaned'] = preprocess(self.dataframe[self.text_col], quiet)
+  def preprocess_texts(self, stemming=False, quiet=False):
+    self.dataframe['cleaned'] = preprocess(self.dataframe[self.text_col],
+                                           stemming, quiet)
+
+  def purge_short_texts(self, min_size):
+    # Remove texts that do not meet the minimum length
+    word_count = self.dataframe[self.text_col].apply(lambda x: len(x.split()))
+    self.dataframe = self.dataframe[word_count >= min_size]
