@@ -54,6 +54,34 @@ Create a new file w/ the datasets containing the given `QUERY`.
 - **query**: String. Search parameter.
 - **dataset_dir**: String. Path to the directory where the files are saved.
 
+### kmeans_data_filter
+
+```bash
+python -m data_fetch.kmeans_data_filter [FILE] -o <OUTPUT_NAME> -od <OUTPUT_DIR_NAME>
+                                        -mf <MAX_FEATURES> -n <N_CLUSTERS>
+                                        -ni <N_INIT> -mi <MAX_ITER>
+                                        -r <RANDOM_STATE>
+```
+
+Filter the data from a file, based on the result of a clustering process using
+the K-means algorithm.
+
+#### Arguments
+
+- **file**: String. Path to the file that will be processed.
+- **-o** | **--output_name**: String. Name of the output file, including the
+extension.
+- **-od** | **--output_dir_name**: String. Name of the directory where the output
+file will be placed. Default: `datasets/kmeans`.
+- **-mf** | **--max_features**: Int. Max number of features to use for the TF-IDF
+scoring. Default: `8000`.
+- **-n** | **--n_clusters**: Int. Number of clusters to create. Default: `4`.
+- **-ni** | **--n_init**: Int. Number of time the k-means algorithm will be run
+with different centroid seeds. Default: `10`.
+- **-mi** | **--max_iter**: Int. Maximum number of iterations of the k-means
+algorithm for a single run. Default: `300`.
+- **-r** | **--random_state**: Int. Determines random number generation for
+centroid initialization. Default: `20`.
 
 ## Sentiment Analysis
 
@@ -63,7 +91,10 @@ the query and the predicted sentiment.
 ### train
 
 ```bash
-python -m sentiment_analysis.train [MODEL_TYPE] [DATASET_PATH] [TOKENIZER_PATH] [SAVE_DIR] -l <LABEL_COL> -t <TEXT_COL> -v <VALIDATION_SPLIT> -ed <EMBEDDING_DIM> -lr <LEARNING_RATE> -e <EPOCHS> -b <BATCH_SIZE>
+python -m sentiment_analysis.train [MODEL_TYPE] [DATASET_PATH] [TOKENIZER_PATH]
+                                   [SAVE_DIR] -l <LABEL_COL> -t <TEXT_COL>
+                                   -v <VALIDATION_SPLIT> -ed <EMBEDDING_DIM>
+                                   -lr <LEARNING_RATE> -e <EPOCHS> -b <BATCH_SIZE>
 ```
 
 Train a sentiment analysis model, using the given `MODEL_TYPE` and save the weights.
