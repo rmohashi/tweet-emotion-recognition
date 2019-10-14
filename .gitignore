@@ -20,3 +20,6 @@ models/**/logs/**/*.*
 # Remove images
 **/*.png
 **/*.jpg
+
+# Remove gcloud key
+key.json
