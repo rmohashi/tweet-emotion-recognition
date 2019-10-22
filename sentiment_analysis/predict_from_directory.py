@@ -18,7 +18,7 @@ def predict_from_directory(files_dir,
                            embedding_dim=100,
                            text_col='text'):
   FILES_DIR = Path(files_dir).resolve()
-  RELATIONS_FILE = Path(os.path.abspath(__file__), '../query_relations.json').resolve()
+  RELATIONS_FILE = Path(os.path.abspath(__file__), '../../query_relations.json').resolve()
 
   with RELATIONS_FILE.open('rb') as file:
     relations = json.load(file)
