@@ -3,8 +3,10 @@ import nltk
 from time import time
 from emoji import demojize
 from nltk.stem.snowball import SnowballStemmer
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
 
-def preprocess(texts, quiet=False, stemming=False, no_emoji=False):
+def preprocess(texts, quiet=False, stemming=False, lemmatization=False, no_emoji=False):
   start = time()
   # Lowercasing
   texts = texts.str.lower()
@@ -41,6 +43,10 @@ def preprocess(texts, quiet=False, stemming=False, no_emoji=False):
     stemmer = SnowballStemmer("english")
     texts = texts.apply(lambda x: stemmer.stem(x))
 
+  # Lemmatization
+  if lemmatization:
+    texts = texts.apply(lambda x: lemmatize_sentence(x))
+
   # Filtering emojis if needed
   if no_emoji:
     texts = texts.str.replace(r":\S+:", '')
@@ -49,3 +55,16 @@ def preprocess(texts, quiet=False, stemming=False, no_emoji=False):
     print("Time to clean up: {:.2f} sec".format(time() - start))
 
   return texts
+
+def lemmatize_sentence(sentence):
+  lemmatizer = WordNetLemmatizer()
+  lemmatized_sentence = ([lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in sentence.split()])
+  return ' '.join(lemmatized_sentence)
+
+def get_wordnet_pos(word):
+  tag = nltk.pos_tag([word])[0][1][0].upper()
+  tag_dict = {'J': wordnet.ADJ,
+              'N': wordnet.NOUN,
+              'V': wordnet.VERB,
+              'R': wordnet.ADV}
+  return tag_dict.get(tag, wordnet.NOUN)

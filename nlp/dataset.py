@@ -26,6 +26,6 @@ class Dataset:
     df = pd.read_csv(Path(self.filename).resolve())
     self.dataframe = df
 
-  def preprocess_texts(self, quiet=False, stemming=False, no_emoji=False):
+  def preprocess_texts(self, quiet=False, lemmatization=False, stemming=False, no_emoji=False):
     self.dataframe['cleaned'] = preprocess(self.dataframe[self.text_col],
-                                           quiet, stemming, no_emoji)
+                                           quiet, stemming, lemmatization, no_emoji)

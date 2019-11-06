@@ -6,7 +6,7 @@ import pandas as pd
 from pathlib import Path
 from nlp.dataset import Dataset
 
-def get_topics(query, save_path, method='lda', count=6):
+def get_topics(query, save_path, method='lda', count=6, num_workers=5):
   preprocessed_docs = get_preprocessed_docs(query, save_path);
   if preprocessed_docs is None:
     return None
@@ -17,8 +17,9 @@ def get_topics(query, save_path, method='lda', count=6):
     model = gensim.models.ldamulticore.LdaMulticore(bow_corpus, 
                                                     num_topics=count, 
                                                     id2word=dictionary,                                    
-                                                    passes=20,
-                                                    workers=5,
+                                                    passes=10,
+                                                    workers=num_workers,
+                                                    chunksize=100,
                                                     iterations=400)
     topics_words = get_topics_words(model.print_topics())
   elif method == 'lsa' or method == 'lsi':
@@ -38,7 +39,7 @@ def get_preprocessed_docs(query, save_path):
   if filename:
     dataset = Dataset('{}/{}'.format(save_path, filename[0]))
     dataset.load()
-    dataset.preprocess_texts(stemming=True, no_emoji=True)
+    dataset.preprocess_texts(lemmatization=True, no_emoji=True)
     tokenized_documents = [tweet.split() for tweet in dataset.dataframe.cleaned]
     dictionary = gensim.corpora.Dictionary(tokenized_documents)
     dictionary.filter_extremes(no_below=15, no_above=0.1, keep_n= 100000)
@@ -50,17 +51,3 @@ def get_preprocessed_docs(query, save_path):
 
 def get_topics_words(topics):
   return [sorted(re.findall(r'"(.*?)"', topic[1])) for topic in topics]
-
-
-
-if __name__ == '__main__':
-  from argparse import ArgumentParser
-
-  parser = ArgumentParser()
-  parser.add_argument('query', type=str)
-  parser.add_argument('save_path', type=str)
-  parser.add_argument('-m', '--method', type=str, default='lda')
-  parser.add_argument('-c', '--count', type=int, default=6)
-
-  args = parser.parse_args()
-  get_topics(**vars(args))
