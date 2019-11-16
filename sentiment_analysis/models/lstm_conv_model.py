@@ -5,6 +5,7 @@ from tensorflow.keras.models import Model
 
 def lstm_conv_model(input_length,
                     input_dim,
+                    embedding_layer,
                     embedding_dim=100,
                     spatial_dropout=0.2,
                     lstm_units=128,
@@ -13,11 +14,15 @@ def lstm_conv_model(input_length,
                     filters=64,
                     kernel_size=3):
   input_layer = Input(shape=(input_length,))
-  output_layer = Embedding(
+
+  if embedding_layer:
+    output_layer = embedding_layer(input_layer)
+  else:
+    output_layer = Embedding(
       input_dim=input_dim,
       output_dim=embedding_dim,
       input_shape=(input_length,)
-  )(input_layer)
+    )(input_layer)
 
   output_layer = SpatialDropout1D(spatial_dropout)(output_layer)
 
@@ -32,7 +37,7 @@ def lstm_conv_model(input_length,
   max_pool = GlobalMaxPooling1D()(output_layer)
   output_layer = concatenate([avg_pool, max_pool])
 
-  output_layer = Dense(2, activation='sigmoid')(output_layer)
+  output_layer = Dense(1, activation='sigmoid')(output_layer)
 
   model = Model(input_layer, output_layer)
   return model
