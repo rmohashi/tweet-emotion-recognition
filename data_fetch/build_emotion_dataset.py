@@ -38,7 +38,7 @@ def build_emotion_dataset(files_dir, save_dir):
     save_path = Path(save_dir).resolve().joinpath(filename)
 
     result_data.to_csv(save_path, index=None)
-    print('Files saved under "' + save_path.as_posix() + '"')
+    print('File saved under "' + save_path.as_posix() + '"')
 
 if __name__ == '__main__':
   build_emotion_dataset()
