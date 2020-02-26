@@ -25,7 +25,7 @@ class Dataset:
     return data
 
   def load(self):
-    df = pd.read_csv(Path(self.filename).resolve())
+    df = pd.read_csv(Path(self.filename).resolve(), lineterminator='\n')
     self.dataframe = df
 
   def preprocess_texts(self, quiet=False, stemming=False, no_emoji=False):

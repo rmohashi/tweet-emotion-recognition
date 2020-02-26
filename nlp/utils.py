@@ -4,7 +4,7 @@ from time import time
 from emoji import demojize
 from nltk.stem.snowball import SnowballStemmer
 
-def preprocess(texts, quiet=False, stemming=True, no_emoji=False):
+def preprocess(texts, quiet=False, stemming=False, no_emoji=False):
   start = time()
   # Lowercasing
   texts = texts.str.lower()
@@ -39,7 +39,7 @@ def preprocess(texts, quiet=False, stemming=True, no_emoji=False):
   # Stemming
   if stemming:
     stemmer = SnowballStemmer("english")
-    texts = texts.apply(lambda x: stemmer.stem(x))
+    texts = texts.apply(lambda x: ' '.join([stemmer.stem(word) for word in x.split()]))
 
   # Filtering emojis if needed
   if no_emoji:

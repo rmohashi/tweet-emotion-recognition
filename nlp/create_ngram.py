@@ -28,7 +28,7 @@ def create_ngram(dataset_path,
                  ngram_range=1):
   dataset = Dataset(dataset_path)
   dataset.load()
-  dataset.preprocess_texts()
+  dataset.preprocess_texts(stemming=True)
   data = dataset.cleaned_data.copy()
 
   tokenizer_file = Path(tokenizer_path)

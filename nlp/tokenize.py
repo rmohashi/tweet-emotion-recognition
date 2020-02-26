@@ -11,11 +11,11 @@ def tokenize(dataset_path,
              num_words=10000):
   dataset = Dataset(dataset_path, label_col=label_col, text_col=text_col)
   dataset.load()
-  dataset.preprocess_texts()
+  dataset.preprocess_texts(stemming=True)
 
   print('Running tokenizer...')
   tokenizer = Tokenizer(num_words=num_words, lower=True)
-  tokenizer.fit_on_texts(dataset.cleaned_data.text)
+  tokenizer.fit_on_texts(dataset.dataframe.cleaned)
 
   file_to_save = Path(os.path.join(save_path, 'tokenizer.pickle')).resolve()
   with file_to_save.open('wb') as file:

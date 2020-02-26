@@ -11,6 +11,7 @@ from .callbacks import checkpoints, early_stopping, tensorboard, reduce_lr
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 
+from gensim.models.keyedvectors import KeyedVectors
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Embedding
@@ -20,6 +21,7 @@ def train(model_type,
           tokenizer_path,
           save_dir,
           glove_embeddings=False,
+          word2vec_embeddings=False,
           label_col='label',
           text_col='text',
           validation_split=0.3,
@@ -30,7 +32,7 @@ def train(model_type,
           batch_size=32):
   dataset = Dataset(dataset_path, label_col=label_col, text_col=text_col)
   dataset.load()
-  dataset.preprocess_texts()
+  dataset.preprocess_texts(stemming=True)
 
   tokenizer_file = Path(tokenizer_path).resolve()
   with tokenizer_file.open('rb') as file:
@@ -68,7 +70,26 @@ def train(model_type,
                                 embedding_dim,
                                 weights=[embedding_matrix],
                                 input_length=input_length,
-                                trainable=True)
+                                trainable=False)
+
+  if(word2vec_embeddings):
+    embedding = KeyedVectors.load_word2vec_format(os.getenv("WORD2VEC_EMBEDDINGS"))
+    embedding_matrix = np.zeros((len(tokenizer.word_index) + 1, embedding.vector_size))
+    for word, i in tokenizer.word_index.items():
+      try:
+        embedding_vector = embedding.get_vector(word)
+        embedding_matrix[i] = embedding_vector
+      except:
+        pass
+
+    embedding_layer = Embedding(
+      input_dim=len(tokenizer.word_index) + 1,
+      output_dim=embedding.vector_size,
+      weights=[embedding_matrix],
+      input_length=input_length,
+      trainable=False,
+      input_shape=(input_length,)
+    )
 
   input_dim = min(tokenizer.num_words, len(tokenizer.word_index) + 1)
   num_classes = len(data.label.unique())
@@ -96,7 +117,12 @@ def train(model_type,
   y_validation = encoder.transform(validation.label)
 
   model_name = model_type + '_' + str(embedding_dim) + '_' + str(input_length)
-  checkpoint_path = os.path.join(save_dir, 'checkpoints', model_name + '_{epoch:02d}-{val_acc:.4f}.h5')
+  checkpoint_dir = os.path.join(save_dir, 'checkpoints', model_name)
+
+  if not os.path.isdir(checkpoint_dir):
+    os.mkdir(checkpoint_dir)
+
+  checkpoint_path = os.path.join(checkpoint_dir, model_name + '_{epoch:02d}-{val_acc:.4f}.h5')
   log_dir = os.path.join(save_dir, 'logs', model_name)
 
   if not os.path.exists(log_dir):
@@ -126,6 +152,7 @@ if __name__ == '__main__':
   parser.add_argument('-t', '--text_col', type=str, default='text')
   parser.add_argument('-v', '--validation_split', type=float, default=0.3)
   parser.add_argument('-ge', '--glove_embeddings', action='store_true', default=False)
+  parser.add_argument('-we', '--word2vec_embeddings', action='store_true', default=False)
   parser.add_argument('-ed', '--embedding_dim', type=int, default=100)
   parser.add_argument('-i', '--input_length', type=int, default=100)
   parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)

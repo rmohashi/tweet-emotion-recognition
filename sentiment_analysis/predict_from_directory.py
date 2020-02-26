@@ -29,7 +29,7 @@ def predict_from_directory(files_dir,
     tokenizer = pickle.load(file)
 
   weights_path = Path(model_weights_file).resolve()
-  input_dim = len(tokenizer.word_index) + 1
+  input_dim = min(tokenizer.num_words, len(tokenizer.word_index) + 1)
   model = NLP_MODEL[model_type](input_length, input_dim, None, embedding_dim=embedding_dim)
   model.load_weights(weights_path.as_posix())
 
@@ -74,7 +74,10 @@ def predict_from_directory(files_dir,
     print('Files saved under "' + save_path + '"')
 
 def get_score_range(mean, std):
-  return (mean - std, mean + std)
+  if mean < 0.5:
+    return (0.0, mean + 0.05)
+  return (mean - 0.05, 1.0)
+
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
@@ -82,7 +85,7 @@ if __name__ == '__main__':
   parser = ArgumentParser()
   parser.add_argument('files_dir', type=str)
   parser.add_argument('model_weights_file', type=str)
-  parser.add_argument('model_type', type=str, choices=['lstm', 'lstm_conv'])
+  parser.add_argument('model_type', type=str, choices=['lstm', 'lstm_conv', 'cnn'])
   parser.add_argument('tokenizer_file', type=str)
   parser.add_argument('save_path', type=str)
   parser.add_argument('-i', '--input_length', type=int, default=100)
