@@ -10,7 +10,7 @@ from nlp.utils import preprocess
 
 def predict_nb(files_dir, model_file, save_path, text_col='text'):
   FILES_DIR = Path(files_dir).resolve()
-  RELATIONS_FILE = Path(os.path.abspath(__file__), '../query_relations.json').resolve()
+  RELATIONS_FILE = Path(os.path.abspath(__file__), '../../query_relations.json').resolve()
 
   with RELATIONS_FILE.open('rb') as file:
     relations = json.load(file)

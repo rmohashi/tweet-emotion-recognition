@@ -38,7 +38,8 @@ def concat_data_from_gcloud(drop_duplicates, bucket, save_folder):
       data = pd.DataFrame(columns=['id', 'date', 'user', 'text'])
       for filename in files_to_use:
         filepath = save_folder_path.joinpath(filename)
-        data = pd.concat([data, pd.read_csv(filepath)])
+        df = pd.read_csv(filepath)[['date', 'id', 'text', 'user']]
+        data = pd.concat([data, df])
         os.remove(filepath)
         t.update()
       if drop_duplicates:

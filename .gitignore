@@ -8,6 +8,7 @@ __pycache__
 
 # Dataset files
 datasets/**/*.csv
+datasets/**/*.txt
 datasets/**/*.pickle
 
 # Model files

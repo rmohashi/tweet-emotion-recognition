@@ -1,6 +1,7 @@
 import os
 import pickle
 import pandas as pd
+import numpy as np
 from pathlib import Path
 
 from nlp.dataset import Dataset
@@ -10,13 +11,17 @@ from .callbacks import checkpoints, early_stopping, tensorboard, reduce_lr
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 
+from gensim.models.keyedvectors import KeyedVectors
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import Embedding
 
 def train(model_type,
           dataset_path,
           tokenizer_path,
           save_dir,
+          glove_embeddings=False,
+          word2vec_embeddings=False,
           label_col='label',
           text_col='text',
           validation_split=0.3,
@@ -27,7 +32,7 @@ def train(model_type,
           batch_size=32):
   dataset = Dataset(dataset_path, label_col=label_col, text_col=text_col)
   dataset.load()
-  dataset.preprocess_texts()
+  dataset.preprocess_texts(stemming=True)
 
   tokenizer_file = Path(tokenizer_path).resolve()
   with tokenizer_file.open('rb') as file:
@@ -42,9 +47,54 @@ def train(model_type,
     train = pd.concat([train, train_data])
     validation = pd.concat([validation, validation_data])
 
+  embedding_layer = None
+  if(glove_embeddings):
+    embeddings_index = {}
+    f = Path(os.getenv("GLOVE_EMBEDDINGS")).open()
+    for line in f:
+      values = line.split()
+      word = values[0]
+      coefs = np.asarray(values[1:], dtype='float32')
+      embeddings_index[word] = coefs
+    f.close()
+
+    embedding_dim = int(os.getenv("EMBEDDING_DIM"))
+    embedding_matrix = np.zeros((len(tokenizer.word_index) + 1, embedding_dim))
+    for word, i in tokenizer.word_index.items():
+      embedding_vector = embeddings_index.get(word)
+      if embedding_vector is not None:
+        # words not found in embedding index will be all-zeros.
+        embedding_matrix[i] = embedding_vector
+
+    embedding_layer = Embedding(len(tokenizer.word_index) + 1,
+                                embedding_dim,
+                                weights=[embedding_matrix],
+                                input_length=input_length,
+                                trainable=False)
+
+  if(word2vec_embeddings):
+    embedding = KeyedVectors.load_word2vec_format(os.getenv("WORD2VEC_EMBEDDINGS"))
+    embedding_matrix = np.zeros((len(tokenizer.word_index) + 1, embedding.vector_size))
+    for word, i in tokenizer.word_index.items():
+      try:
+        embedding_vector = embedding.get_vector(word)
+        embedding_matrix[i] = embedding_vector
+      except:
+        pass
+
+    embedding_layer = Embedding(
+      input_dim=len(tokenizer.word_index) + 1,
+      output_dim=embedding.vector_size,
+      weights=[embedding_matrix],
+      input_length=input_length,
+      trainable=False,
+      input_shape=(input_length,)
+    )
+
   input_dim = min(tokenizer.num_words, len(tokenizer.word_index) + 1)
   num_classes = len(data.label.unique())
-  model = NLP_MODEL[model_type](input_length, input_dim, num_classes, embedding_dim=embedding_dim)
+  model = NLP_MODEL[model_type](input_length, input_dim, num_classes,
+                                embedding_layer, embedding_dim=embedding_dim)
   optimizer = Adam(learning_rate)
   model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
   print(model.summary())
@@ -67,7 +117,12 @@ def train(model_type,
   y_validation = encoder.transform(validation.label)
 
   model_name = model_type + '_' + str(embedding_dim) + '_' + str(input_length)
-  checkpoint_path = os.path.join(save_dir, 'checkpoints', model_name + '_{epoch:02d}-{val_acc:.4f}.h5')
+  checkpoint_dir = os.path.join(save_dir, 'checkpoints', model_name)
+
+  if not os.path.isdir(checkpoint_dir):
+    os.mkdir(checkpoint_dir)
+
+  checkpoint_path = os.path.join(checkpoint_dir, model_name + '_{epoch:02d}-{val_acc:.4f}.h5')
   log_dir = os.path.join(save_dir, 'logs', model_name)
 
   if not os.path.exists(log_dir):
@@ -89,13 +144,15 @@ if __name__ == '__main__':
   from argparse import ArgumentParser
 
   parser = ArgumentParser()
-  parser.add_argument('model_type', type=str, choices=['gru', 'lstm_conv'])
+  parser.add_argument('model_type', type=str, choices=['lstm', 'lstm_conv', 'cnn'])
   parser.add_argument('dataset_path', type=str)
   parser.add_argument('tokenizer_path', type=str)
   parser.add_argument('save_dir', type=str)
   parser.add_argument('-l', '--label_col', type=str, default='label')
   parser.add_argument('-t', '--text_col', type=str, default='text')
   parser.add_argument('-v', '--validation_split', type=float, default=0.3)
+  parser.add_argument('-ge', '--glove_embeddings', action='store_true', default=False)
+  parser.add_argument('-we', '--word2vec_embeddings', action='store_true', default=False)
   parser.add_argument('-ed', '--embedding_dim', type=int, default=100)
   parser.add_argument('-i', '--input_length', type=int, default=100)
   parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
