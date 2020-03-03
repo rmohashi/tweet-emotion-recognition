@@ -158,3 +158,8 @@ Predict the tweet polarity and save the purge the oddly fetched examples.
 - **save_dir**: String. Path to the directory where the result will be saved.
 - **-t** | **--text_col**: String. Name of the text column. Default: `text`.
 - **-p** | **--positive**: Boolean. If the emotion can be classified as positive. Default: `False`.
+
+## Authors
+
+- Rodrigo Masaru Ohashi - [rmohashi](https://github.com/rmohashi)
+- Matheus Felix Lima Dias da Silva - [matheusflds](https://github.com/matheusflds)
